@@ -27,17 +27,27 @@ LANGS = {
 }
 
 
+ART = r"""
+_    _           _____ _    _    _____ _    _ ______ _____ _  ________ _____  
+| |  | |   /\    / ____| |  | |  / ____| |  | |  ____/ ____| |/ /  ____|  __ \ 
+| |__| |  /  \  | (___ | |__| | | |    | |__| | |__ | |    | ' /| |__  | |__) |
+|  __  | / /\ \  \___ \|  __  | | |    |  __  |  __|| |    |  < |  __| |  _  / 
+| |  | |/ ____ \ ____) | |  | | | |____| |  | | |___| |____| . \| |____| | \ \ 
+|_|  |_/_/    \_\_____/|_|  |_|  \_____|_|  |_|______\_____|_|\_\______|_|  \_\
+"""
+
+
 def calculate_file_hash(file_path, variant):
-    if variant == "y":
+    if variant == "n":
+        with open(file_path, "rb") as f:
+            digest = hsh.file_digest(f, "sha256")
+        return digest.hexdigest()
+    else:
         hash_obj = hsh.sha256()
         with open(file_path, "rb") as f:
             while chunk := f.read(4096):
                 hash_obj.update(chunk)
         return hash_obj.hexdigest()
-    else:
-        with open(file_path, "rb") as f:
-            digest = hsh.file_digest(f, "sha256")
-        return digest.hexdigest()
 
 
 def check_hashes(hash1, hash2):
@@ -48,6 +58,7 @@ def check_hashes(hash1, hash2):
 
 
 def main():
+    print(ART)
     # Выбор языка
     lang_choice = input("Select language (en / ru): ").strip().lower()
     if lang_choice not in LANGS:
@@ -75,6 +86,8 @@ def main():
 
     # Получить хэш от пользователя
     user_hash = input(lang_dict["hash_prompt"]).strip()
+    print("-----------------------------------------------", end="")
+    print("------------------------------------------------------------")
 
     # Вывести для сравнения
     print(f"{lang_dict['display_file_hash']}{file_hash}")
