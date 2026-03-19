@@ -27,6 +27,11 @@ def main():
         try:
             # Путь к файлу
             file_path = input("Укажите путь к файлу: ").strip()
+            # Добавляем очистку от кавычек
+            if (file_path.startswith('"') and file_path.endswith('"')) or \
+                    (file_path.startswith("'") and file_path.endswith("'")):
+                # Убираем первый и последний символ
+                file_path = file_path[1:-1]
             # Преобразование в строку хэш файла
             file_hash = calculate_file_hash(file_path, variant)
             break
