@@ -1,9 +1,11 @@
 import hashlib as hsh
 
 
-# Переводы
+# NOTE: Works well only with Python 3.11+
+
+# Переводы / Translations
 LANGS = {
-    # Default / по умолчанию
+    # Default / По умолчанию
     "en": {
         "big_file_prompt": "Is your file larger than 1 GB? (y / n): ",
         "path_prompt": "Specify the file path: ",
@@ -38,6 +40,17 @@ _    _           _____ _    _    _____ _    _ ______ _____ _  ________ _____
 
 
 def calculate_file_hash(file_path, variant):
+    """Calculates the hash of a file.
+
+    Args:
+        file_path (str): Accepts a string 
+        of the form "C:\\Downloads\\file.exe".
+        variant (str): Specifies the hash 
+        calculation path (chunk-wise or as a whole).
+
+    Returns:
+        str: HASH256
+    """
     if variant == "n":
         with open(file_path, "rb") as f:
             digest = hsh.file_digest(f, "sha256")
@@ -51,6 +64,17 @@ def calculate_file_hash(file_path, variant):
 
 
 def check_hashes(hash1, hash2):
+    """Compares two different hashes (strings) 
+    in a case-insensitive manner.
+
+    Args:
+        hash1 (str): Hash of the selected file.
+        hash2 (str): The hash entered by the user into the terminal.
+
+    Returns:
+        bool: Returns True if the hashes (strings) are the same, 
+        and False otherwise.
+    """
     if hash1.lower() == hash2.lower():
         return True
     else:
@@ -58,42 +82,54 @@ def check_hashes(hash1, hash2):
 
 
 def main():
+    """1. Displays ASCII art
+    2. Selects the language.
+    3. Starts a loop to select a file.
+    4. Calculates the hash of the selected file.
+    5. Receives a second hash from the user.
+    6. Displays both hashes for visual comparison by the user.
+    7. Compares both hashes.
+    8. Displays the result.
+    """
     print(ART)
-    # Выбор языка
+    # Выбор языка / Language selection
     lang_choice = input("Select language (en / ru): ").strip().lower()
     if lang_choice not in LANGS:
         lang_choice = "en"
 
-    # Выбранный словарь
+    # Выбранный словарь / Selected dictionary
     lang_dict = LANGS[lang_choice]
 
     variant = input(lang_dict["big_file_prompt"]).strip().lower()
 
     while True:
         try:
-            # Путь к файлу
+            # Путь к файлу / File path
             file_path = input(lang_dict["path_prompt"]).strip()
-            # Добавляем очистку от кавычек
+            # Очистка от кавычек / Clearing quotes
             if (file_path.startswith('"') and file_path.endswith('"')) or \
                     (file_path.startswith("'") and file_path.endswith("'")):
                 # Убираем первый и последний символ
+                # / Remove the first and last characters
                 file_path = file_path[1:-1]
             # Преобразование в строку хэш файла
+            # / Converting a hash file to a string
             file_hash = calculate_file_hash(file_path, variant)
             break
         except FileNotFoundError:
             print(lang_dict["file_not_found"])
 
-    # Получить хэш от пользователя
+    # Получить хэш от пользователя / Get a hash from a user
     user_hash = input(lang_dict["hash_prompt"]).strip()
+
     print("-----------------------------------------------", end="")
     print("------------------------------------------------------------")
 
-    # Вывести для сравнения
+    # Вывести для сравнения / Display for comparison
     print(f"{lang_dict['display_file_hash']}{file_hash}")
     print(f"{lang_dict['display_user_hash']}{user_hash}")
 
-    # Результат
+    # Результат / Result
     if check_hashes(file_hash, user_hash):  # == True
         print(lang_dict["result_match"])
     else:
