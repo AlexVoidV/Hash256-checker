@@ -12,7 +12,7 @@ LANGS = {
         "result_match": "Hash matches!",
         "result_mismatch": "Hash does NOT match!",
         "display_file_hash": "Hash of the specified file: ",
-        "display_user_hash": "Entered hash: ",
+        "display_user_hash": "Entered hash:               ",
         "exit_instructions": "To exit, press <q>",
         "select_hash": "Select the desired hash type: ",
         "hash_comparison": "Need a hash comparison?"
@@ -24,7 +24,7 @@ LANGS = {
         "result_match": "Хэш совпадает!",
         "result_mismatch": "Хэш не совпал!",
         "display_file_hash": "Хэш указанного файла: ",
-        "display_user_hash": "Введённый хэш: ",
+        "display_user_hash": "Введённый хэш:        ",
         "exit_instructions": "Чтобы выйти, нажмите <q>",
         "select_hash": "Выберите нужный тип хэша: ",
         "hash_comparison": "Требуется сравнение хэша?"
@@ -32,8 +32,6 @@ LANGS = {
 }
 
 HASHES = {
-    "": "sha256",
-    " ": "sha256",
     "1": "sha256",
     "2": "md5",
     "3": "sha1"
@@ -97,16 +95,10 @@ def main():
     # Выбранный словарь / Selected dictionary
     lang_dict = LANGS[lang_choice]
 
-    # TODO: add connection to dict (by get, i think)
     # Выбор хэша / Hash selection
     hash_type = input("1 (SHA256) | 2 (MD5) | 3 (SHA1)\n"
                       + lang_dict["select_hash"]).strip()
-    if hash_type == "2":
-        hash_type = "md5"
-    elif hash_type == "3":
-        hash_type = "sha1"
-    else:
-        hash_type = "sha256"
+    hash_type = HASHES.get(hash_type, "sha256")
 
     comparison = input(
         lang_dict["hash_comparison"] + "(y / n): ").strip().lower()
