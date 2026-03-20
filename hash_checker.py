@@ -2,13 +2,10 @@ import hashlib as hsh
 import sys
 
 
-# NOTE: Works well only with Python 3.11+
-
 # Переводы / Translations
 LANGS = {
     # Default / По умолчанию
     "en": {
-        "big_file_prompt": "Is your file larger than 1 GB? (y / n): ",
         "path_prompt": "Specify the file path: ",
         "hash_prompt": "Enter the developer-provided hash: ",
         "file_not_found": "File not found!",
@@ -16,10 +13,11 @@ LANGS = {
         "result_mismatch": "Hash does NOT match!",
         "display_file_hash": "Hash of the specified file: ",
         "display_user_hash": "Entered hash: ",
-        "exit_instructions": "To exit, press <Q>"
+        "exit_instructions": "To exit, press <q>",
+        "select_hash": "Select the desired hash type: ",
+        "hash_comparison": "Need a hash comparison?"
     },
     "ru": {
-        "big_file_prompt": "Ваш файл тяжелее 1 ГБ? (y / n): ",
         "path_prompt": "Укажите путь к файлу: ",
         "hash_prompt": "Введите предоставленный разработчиком хэш: ",
         "file_not_found": "Файл не найден!",
@@ -27,11 +25,15 @@ LANGS = {
         "result_mismatch": "Хэш не совпал!",
         "display_file_hash": "Хэш указанного файла: ",
         "display_user_hash": "Введённый хэш: ",
-        "exit_instructions": "Чтобы выйти, нажмите <Q>"
+        "exit_instructions": "Чтобы выйти, нажмите <q>",
+        "select_hash": "Выберите нужный тип хэша: ",
+        "hash_comparison": "Требуется сравнение хэша?"
     }
 }
 
 HASHES = {
+    "": "sha256",
+    " ": "sha256",
     "1": "sha256",
     "2": "md5",
     "3": "sha1"
@@ -47,24 +49,18 @@ ART = r"""
 """
 
 
-def calculate_file_hash(file_path, hash_type):
+def calculate_file_hash(file_path, hash_type) -> str:
     """Calculates the hash of a file.
 
     Args:
-        file_path (str): Accepts a string 
-        of the form like "C:\\Downloads\\file.exe".
-        ~variant (str): Specifies the hash 
-        calculation path (chunk-wise or as a whole).~
+        file_path (str): Accepts a string of the form \
+            like "C:\\Downloads\\file.exe".
+        hash_type (str): Specifies the hash type.
 
     Returns:
-        str: HASH256
+        str: Hexadecimal hash string
     """
-    # if variant == "n":
-    #     with open(file_path, "rb") as f:
-    #         digest = hsh.file_digest(f, "sha256")
-    #     return digest.hexdigest()
-    # else:
-    hash_obj = hsh.sha256()
+    hash_obj = hsh.new(hash_type)
     with open(file_path, "rb") as f:
         while chunk := f.read(4096):
             hash_obj.update(chunk)
@@ -93,21 +89,27 @@ def main():
     print(ART)
 
     # Выбор языка / Language selection
-    lang_choice = input("Select language (en / ru): ").strip().lower()
+    lang_choice = input(
+        "Select language / Выберите язык (en / ru): ").strip().lower()
     if lang_choice not in LANGS:
         lang_choice = "en"
 
     # Выбранный словарь / Selected dictionary
     lang_dict = LANGS[lang_choice]
 
-    # Выбор хэша
-    hash_type = input('''1 (HASH256) | 2 (MD5) | 3 (SHA1)
-    Выберите нужный тип хэша: ''')
+    # TODO: add connection to dict (by get, i think)
+    # Выбор хэша / Hash selection
+    hash_type = input("1 (SHA256) | 2 (MD5) | 3 (SHA1)\n"
+                      + lang_dict["select_hash"]).strip()
+    if hash_type == "2":
+        hash_type = "md5"
+    elif hash_type == "3":
+        hash_type = "sha1"
+    else:
+        hash_type = "sha256"
 
-    comparison = input("Требуется сравнение хэша? (y / n): ").strip().lower()
-
-    # DELETE THIS!
-    # variant = input(lang_dict["big_file_prompt"]).strip().lower()
+    comparison = input(
+        lang_dict["hash_comparison"] + "(y / n): ").strip().lower()
 
     print(lang_dict["exit_instructions"])
 
@@ -116,7 +118,6 @@ def main():
             # Путь к файлу / File path
             file_path = input(lang_dict["path_prompt"]).strip()
 
-            # TODO: ↓.
             # Выход по требованию / Exit on demand
             if file_path == "q":
                 sys.exit()
@@ -124,11 +125,8 @@ def main():
             # Очистка от кавычек / Clearing quotes
             if (file_path.startswith('"') and file_path.endswith('"')) or \
                     (file_path.startswith("'") and file_path.endswith("'")):
-                # Убираем первый и последний символ
-                # / Remove the first and last characters
                 file_path = file_path[1:-1]
-            # Преобразование в строку хэш файла
-            # / Converting a hash file to a string
+            # Вычисление хэша / Calculating a hash
             file_hash = calculate_file_hash(file_path, hash_type)
             break
         except FileNotFoundError:
@@ -146,12 +144,12 @@ def main():
         print(f"{lang_dict['display_user_hash']}{user_hash}")
 
         # Результат / Result
-        if check_hashes(file_hash, user_hash):  # == True
+        if check_hashes(file_hash, user_hash):
             print(lang_dict["result_match"])
         else:
             print(lang_dict["result_mismatch"])
     else:
-        print(file_hash)
+        print(f"\n{file_hash}")
 
 
 if __name__ == "__main__":
