@@ -4,7 +4,7 @@ import sys
 
 # Переводы / Translations
 LANGS = {
-    # Default / По умолчанию
+    # По умолчанию / Default
     "en": {
         "path_prompt": "Specify the file path: ",
         "hash_prompt": "Enter the developer-provided hash: ",
@@ -15,7 +15,7 @@ LANGS = {
         "display_user_hash": "Entered hash:               ",
         "exit_instructions": "To exit, press <q>",
         "select_hash": "Select the desired hash type: ",
-        "hash_comparison": "Need a hash comparison?",
+        "hash_comparison": "Need a hash comparison? ",
     },
     "ru": {
         "path_prompt": "Укажите путь к файлу: ",
@@ -27,7 +27,7 @@ LANGS = {
         "display_user_hash": "Введённый хэш:        ",
         "exit_instructions": "Чтобы выйти, нажмите <q>",
         "select_hash": "Выберите нужный тип хэша: ",
-        "hash_comparison": "Требуется сравнение хэша?",
+        "hash_comparison": "Требуется сравнение хэша? ",
     },
 }
 
@@ -76,7 +76,7 @@ def check_hashes(hash1: str, hash2: str) -> bool:
     return hash1.lower() == hash2.lower()
 
 
-# TODO: 1. Rework exit (Ctrl-C) 2. Cycle for main()
+# TODO: 1. Rework exit (Ctrl-C) 2. Cycle for main() 3. New input system
 def main() -> None:
     print(ART)
 
