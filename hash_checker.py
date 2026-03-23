@@ -50,6 +50,8 @@ HELP = """
 /t – change the type of hash (сменить тип хэша)
 /c – enable or disable comparison (включить или выключить сравнение)"""
 
+MSG_BOX = {"0": "[INFO]: ", "1": "[SUCCESS]: ", "2": "[FAILURE]: "}
+
 
 def calculate_file_hash(user_input: str, hash_type: str) -> str:
     """Calculates the hash of a file.
@@ -125,7 +127,9 @@ def main() -> None:
                         ).strip()
                         hash_type = HASHES.get(hash_type, "sha256")
                         print(
-                            "[INFO]: " + lang_dict["hash_changed"] + hash_type
+                            MSG_BOX["0"]
+                            + lang_dict["hash_changed"]
+                            + hash_type
                         )
                         continue
                     elif user_input == "/c":
@@ -135,7 +139,7 @@ def main() -> None:
                             .lower()
                         )
                         print(
-                            "[INFO]: "
+                            MSG_BOX["0"]
                             + lang_dict["comparison"]
                             + f"<{comparison}>"
                         )
@@ -164,13 +168,13 @@ def main() -> None:
 
                         # Результат / Result
                         if check_hashes(file_hash, user_hash):
-                            print("[SUCCESS]: " + lang_dict["result_match"])
+                            print(MSG_BOX["1"] + lang_dict["result_match"])
                         else:
-                            print("[FAILURE]: " + lang_dict["result_mismatch"])
+                            print(MSG_BOX["2"] + lang_dict["result_mismatch"])
                     else:
                         print(f"\n{file_hash}")
             except FileNotFoundError:
-                print(lang_dict["file_not_found"])
+                print(MSG_BOX["2"] + lang_dict["file_not_found"])
 
     except KeyboardInterrupt:
         sys.exit()
