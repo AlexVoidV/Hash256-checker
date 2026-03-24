@@ -17,6 +17,7 @@ LANGS = {
         "hash_comparison": "Need a hash comparison? ",
         "hash_changed": "Hash type changed to ",
         "comparison": "Comparison is now ",
+        "no_permission": "No access rights to the file",
     },
     "ru": {
         "path_prompt": "Укажите путь к файлу: ",
@@ -30,6 +31,7 @@ LANGS = {
         "hash_comparison": "Требуется сравнение хэша? ",
         "hash_changed": "Тип хэша сменён на ",
         "comparison": "Сравнение теперь ",
+        "no_permission": "Нет прав доступа к файлу",
     },
 }
 
@@ -65,7 +67,7 @@ def calculate_file_hash(file_path: Path, hash_type: str) -> str:
     """Calculates the hash of a file.
 
     Args:
-        user_input (str): Accepts a string of the form \
+        file_path (Path): Accepts a string of the form \
             like "C:\\Downloads\\file.exe".
         hash_type (str): Specifies the hash type.
 
@@ -123,7 +125,7 @@ def main() -> None:
 
                 if user_input.startswith("/"):
                     if user_input in ("/q", "/quit"):
-                        break
+                        raise KeyboardInterrupt
                     elif user_input == "/h":
                         print(HELP)
                         continue
@@ -183,8 +185,11 @@ def main() -> None:
                         print(f"\n{file_hash}")
             except FileNotFoundError:
                 print(MSG_BOX["2"] + lang_dict["file_not_found"])
+            except PermissionError:
+                print(MSG_BOX["2"] + lang_dict["no_permission"])
 
     except KeyboardInterrupt:
+        print("\nExiting...") 
         sys.exit()
 
 
