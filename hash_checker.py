@@ -14,10 +14,10 @@ LANGS = {
         "display_file_hash": "Hash of the specified file: ",
         "display_user_hash": "Entered hash:               ",
         "select_hash": "Select the desired hash type: ",
-        "hash_comparison": "Need a hash comparison? ",
         "hash_changed": "Hash type changed to ",
-        "comparison": "Comparison is now ",
         "no_permission": "No access rights to the file",
+        "enable_comparison": "Comparison is enabled",
+        "disable_comparison": "Comparison is disabled",
     },
     "ru": {
         "path_prompt": "Укажите путь к файлу: ",
@@ -28,10 +28,10 @@ LANGS = {
         "display_file_hash": "Хэш указанного файла: ",
         "display_user_hash": "Введённый хэш:        ",
         "select_hash": "Выберите нужный тип хэша: ",
-        "hash_comparison": "Требуется сравнение хэша? ",
         "hash_changed": "Тип хэша сменён на ",
-        "comparison": "Сравнение теперь ",
         "no_permission": "Нет прав доступа к файлу",
+        "enable_comparison": "Сравнение включено",
+        "disable_comparison": "Сравнение выключено",
     },
 }
 
@@ -116,13 +116,14 @@ def main() -> None:
         lang_dict = LANGS[lang_choice]
 
         hash_type = "sha256"  # По умолчанию / Default
-        comparison = "n"  # По умолчанию / Default
+        comparison = False  # По умолчанию / Default
 
         while True:
             try:
                 # Путь к файлу / File path
                 user_input = input("\n" + lang_dict["path_prompt"]).strip()
 
+                # Список команд / List of commands
                 if user_input.startswith("/"):
                     if user_input in ("/q", "/quit"):
                         raise KeyboardInterrupt
@@ -143,18 +144,9 @@ def main() -> None:
                         )
                         continue
                     elif user_input == "/c":
-                        comparison = (
-                            input(lang_dict["hash_comparison"] + "(y / n): ")
-                            .strip()
-                            .lower()
-                        )
-                        if not comparison:
-                            comparison = "n"
-                        print(
-                            MSG_BOX["0"]
-                            + lang_dict["comparison"]
-                            + f"<{comparison}>"
-                        )
+                        comparison = not comparison
+                        comparison_status = lang_dict["enable_comparison"] if comparison else lang_dict["disable_comparison"]
+                        print(MSG_BOX["0"] + comparison_status)
                         continue
                 else:
                     file_path = Path(user_input.strip().strip('"').strip("'"))
@@ -165,7 +157,7 @@ def main() -> None:
                     # Вычисление хэша / Calculating a hash
                     file_hash = calculate_file_hash(file_path, hash_type)
 
-                    if comparison == "y":
+                    if comparison:
                         # Получить хэш от пользователя / Get a hash from a user
                         user_hash = input(lang_dict["hash_prompt"]).strip()
 
